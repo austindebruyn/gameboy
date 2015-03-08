@@ -1,0 +1,14 @@
+doctype html
+html
+	head
+		title Gameboy
+		link(href='css/slate.min.css', rel='stylesheet')
+		link(href='css/gameboy.css', rel='stylesheet')
+		script(src='js/jquery-2.1.3.min.js')
+		script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js')
+		block head
+	body
+		#container.container
+			include ./flash
+			block content
+

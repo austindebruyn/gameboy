@@ -1,0 +1,13 @@
+extends layout
+
+block content
+	h2 What would you like to do?
+	.module
+		h3 Host
+		form(action='/host', method='post')
+			button.btn.btn-lg.btn-primary(type='submit') Host
+	.module
+		h3 Join
+		form(action='/join', method='post')
+			input.form-control(type='text', name='room_id')
+			button.btn.btn-lg.btn-primary(type='submit') Join

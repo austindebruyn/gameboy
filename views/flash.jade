@@ -1,0 +1,13 @@
+- if (messages.info)
+	each message in messages.info
+		.alert.alert-default.alert-dismissable
+			button.close(type='button', data-dismiss='alert')
+				span &times;
+			span.alert-message!= message
+- if (messages.err)
+	each message in messages.err
+		.alert.alert-danger.alert-dismissable
+			button.close(type='button', data-dismiss='alert')
+				span &times;
+			span.glyphicon.glyphicon-exclamation-sign(aria-hidden='true')
+			span.alert-message!= message
