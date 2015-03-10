@@ -68,7 +68,7 @@ document.onready =  function () {
 	});
 
 	socket.on('message', function (data) {
-		chatbox.addLine(data.username, data.message);
+		chatbox.addLine(data.username, data.message, data.color);
 	});
 
 	socket.on('power', function () {

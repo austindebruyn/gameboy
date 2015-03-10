@@ -12,7 +12,7 @@ var Gameboy = require('gameboy');
 var exports = module.exports = {
 
 	/**
-	 * Boot and return an object with CRUD
+	 * Boot and return an object with CRUD methods.
 	 * @return {[type]} [description]
 	 */
 	boot: function () {

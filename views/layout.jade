@@ -8,7 +8,17 @@ html
 		script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js')
 		block head
 	body
-		#container.container
-			include ./flash
-			block content
+		.bg-color
+			#container.container
+				include ./flash
+				block content
+	footer
+		| 	Built by 
+		a(href='https://au.stin.xyz') austin.xyz
+		| . See 
+		a(href='/legal') Privacy Policy and legal
+		| .
+	head
+		- if(include_google_analytics)
+			script(src='js/analytics.js')
 

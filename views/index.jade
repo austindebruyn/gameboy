@@ -5,8 +5,11 @@ block content
 	.col-sm-3.col-md-6.col-lg-6
 		.module
 			h3 Host
-			h4 Select Game
 			form(action='/host', method='post')
+				label(for='rom') Select Game
+				select.form-control(name='rom')
+					each game, index in games
+						option(val=index)= game.title
 				button.btn.btn-lg.btn-primary(type='submit') Host
 		.module
 			h3 Join
@@ -16,5 +19,6 @@ block content
 	.col-sm-3.col-md-6.col-lg-6
 		.module
 			h3 Add a New Game
-			form(enctype='multipart/form-data')
-				input(type='file')
+			form(enctype='multipart/form-data', action='/api/games/create', method='POST')
+				input(type='file', name='rom')
+				button.btn.btn-lg.btn-primary(type='submit') Upload

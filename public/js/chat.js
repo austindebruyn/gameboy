@@ -12,10 +12,12 @@ function Chat (element) {
  * @param {[type]} name [description]
  * @param {[type]} text [description]
  */
-Chat.prototype.addLine = function (name, text) {
+Chat.prototype.addLine = function (name, text, color) {
 
 	var span = $(document.createElement('span'));
-	span.attr('class', 'name');
+	span.addClass('name');
+	if (typeof color === 'number')
+		span.addClass(['c_red', 'c_blu', 'c_yel', 'c_gre', 'c_pur', 'c_ora'][color]);
 	span.html(name + ': ');
 
 	var div = $(document.createElement('div'));

@@ -4,7 +4,6 @@ var util 		= require('util');
 var express 	= require('express');
 var http 		= require('http');
 var validate 	= require('validate.js');
-var busboy 		= require('connect-busboy');
 var bodyParser 	= require('body-parser');
 var uuid 		= require('node-uuid');
 
@@ -15,13 +14,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(require('express-session')(require('./config/session')));
-app.use(busboy({ immediate: true }));
+app.use(require('connect-busboy')({ immediate: true }));
 app.set('view engine', 'jade');
+
+// Set up the view configuration.
+var viewConfig 	= require('./config/views');
+app.locals.include_google_analytics = viewConfig.include_google_analytics;
 
 // Now inject dependencies and boot the services.
 global.log 		= require('./services/LogService').boot();
-var rooms 		= require('./services/RoomService').boot();
 var db 			= require('./services/DbService').boot();
+var rooms 		= require('./services/RoomService').boot();
+var games		= require('./services/GameService').boot(db);
 var socketio	= require('./services/SocketIOService');
 
 // Open up routes.
@@ -29,8 +33,15 @@ app.get('/', function (req, res) {
 	if (typeof req.session.username === 'undefined') return res.redirect('/who-are-you');
 	res.locals.username = req.body.username;
 
-	log.debug('Serving index for session %s.', req.session.username);
-	return res.render('index');
+	games.all(function (games) {
+		res.locals.games = games;
+		log.debug('Serving index for session %s.', req.session.username);
+		return res.render('index');
+	});
+});
+
+app.get('/legal', function (req, res) {
+	return res.render('legal');
 });
 
 app.get('/api/user', function (req, res) {
@@ -49,17 +60,51 @@ app.get('/api/user', function (req, res) {
 	}));
 });
 
-app.post('/games/create', function (req, res) {
-	if (req.busboy) {
-		req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-			console.log(arguments);
-		});
-		req.busboy.on('field', function(key, value, keyTruncated, valueTruncated) {
-			console.log('field')
-			console.log(arguments);
-		});
-		req.pipe(req.busboy);
+app.post('/api/games/create', function (req, res) {
+	if (typeof req.session.username === 'undefined') {
+		req.statusCode = 403;
+		return res.end();
 	}
+
+	var fstream;
+    req.pipe(req.busboy);
+    req.busboy.on('file', function (fieldname, file, filename) {
+
+    	if (fieldname !== 'rom') return res.render('404');
+
+    	log.note('Handling file upload for %s=%s.', fieldname, filename);
+
+    	var rules = {
+			fileSize: {
+				minimum: 1,
+				maximum: 1024 * 1024 * 8
+			}
+    	};
+
+    	var input = {};
+    	var errors = validate(rules, { fileSize: file.size });
+
+    	if (errors) {
+			for (var i in errors) { req.flash('err', errors[i]); };
+				return res.redirect('/')
+    	}
+
+    	games.create({
+    		filename: filename,
+    		file: file,
+    		username: req.session.username
+    	}, function (err) {
+    		if (err) {
+    			log.err(err);
+    			req.flash('err', 'Something went wrong while trying to store that!');
+    			return res.redirect('/');
+    		}
+
+    		req.flash('success', 'Got it! That game is now playable.');
+    		return res.redirect('/');
+    	});
+
+    });
 });
 
 app.get('/~:name', function (req, res) {
@@ -151,6 +196,17 @@ app.post('/who-are-you', function (req, res) {
 
 	log.debug('Serving post who-are-you for session user %s.', req.session.username);
 	return res.redirect('/');
+});
+
+app.use(function (req, res, next) {
+	res.status(404);
+
+	if (req.accepts('html'))
+		return res.render('404');
+	if (req.accepts('json'))
+		return res.send({ error: 'Not found' });
+	
+	res.type('txt').send('Not found');
 });
 
 var server 	= app.listen(PORT);

@@ -43,8 +43,8 @@ var exports = module.exports = {
 					return;
 				}
 
-				// Increment the number of players in this room.
-				room.clientCount++;
+				// Assign colors and increment the number of players in this room.
+				var color = (room.clientCount++) % 6;
 
 				if (room.emulation.running) socket.emit('power');
 				socket.emit('speed', room.emulation.speed);
@@ -105,6 +105,7 @@ var exports = module.exports = {
 					log.chat('[%s][room:%s]: %s', data.username, room.room_id, messageData.message);
 					socket.broadcast.to(room.room_id).emit('message', {
 						username: data.username,
+						color: color,
 						message: messageData.message
 					});
 				});

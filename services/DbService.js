@@ -19,14 +19,11 @@ var exports = module.exports = {
 		var Game = sequelize.define('Game', {
 			id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
 			title: Sequelize.STRING,
-			filename: Sequelize.STRING
+			filename: Sequelize.STRING,
+			uploader: Sequelize.STRING
 		});
 
 		sequelize.sync();
-
-		Game.create({
-			username: 'austin'
-		});
 
 		return {
 			Game: Game

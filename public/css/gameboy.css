@@ -37,6 +37,39 @@ input[type=text], input[type=password], input[type=textarea] {
 	text-align: center;
 }
 
+body {
+	background-color: #121417;
+	margin: 0;
+	padding: 0;
+}
+
+body .bg-color {
+	padding: 0 0 30px 0;
+	background-color: #272B30;
+}
+
+footer {
+	padding: 18px 64px;
+	width: 100%;
+	height: 60px;
+	
+	text-align: center;
+}
+
+footer a {
+	color: #646464;
+	transition: color 100ms ease-in-out;
+}
+
+footer a:hover {
+	color: #c8c8c8;
+	transition: none;
+}
+
+.legal {
+	text-align: left;
+}
+
 .alert {
 	text-align: left;
 }
@@ -111,6 +144,13 @@ input[type=text], input[type=password], input[type=textarea] {
 .chat-log-line:nth-child(odd) {
 	background: #EEE;
 }
+
+.chat-log-line span.name.c_red { color: #D44; }
+.chat-log-line span.name.c_blu { color: #679; }
+.chat-log-line span.name.c_yel { color: #FE5; }
+.chat-log-line span.name.c_gre { color: #5E4; }
+.chat-log-line span.name.c_pur { color: #93D; }
+.chat-log-line span.name.c_ora { color: #C72; }
 
 .chat-log-line span.name {
 	font-weight: bold;
