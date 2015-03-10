@@ -1,121 +1,87 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/bin/node', '/bin/npm', 'install', 'winston', '--save' ]
+1 verbose cli [ '/bin/node', '/bin/npm', 'install', 'connect-busyboy', '--save' ]
 2 info using npm@1.4.28
 3 info using node@v0.10.33
-4 warn package.json gameboy@0.2.0 No repository field.
-5 verbose cache add [ 'winston', null ]
-6 verbose cache add name=undefined spec="winston" args=["winston",null]
-7 verbose parsed url { protocol: null,
-7 verbose parsed url   slashes: null,
-7 verbose parsed url   auth: null,
-7 verbose parsed url   host: null,
-7 verbose parsed url   port: null,
-7 verbose parsed url   hostname: null,
-7 verbose parsed url   hash: null,
-7 verbose parsed url   search: null,
-7 verbose parsed url   query: null,
-7 verbose parsed url   pathname: 'winston',
-7 verbose parsed url   path: 'winston',
-7 verbose parsed url   href: 'winston' }
-8 silly lockFile e2f3e36e-winston winston
-9 verbose lock winston /home/austin/.npm/e2f3e36e-winston.lock
-10 silly lockFile e2f3e36e-winston winston
-11 silly lockFile e2f3e36e-winston winston
-12 verbose addNamed [ 'winston', '' ]
-13 verbose addNamed [ null, '*' ]
-14 silly lockFile 9aa54492-winston winston@
-15 verbose lock winston@ /home/austin/.npm/9aa54492-winston.lock
-16 silly addNameRange { name: 'winston', range: '*', hasData: false }
-17 verbose request where is /winston
-18 verbose request registry https://registry.npmjs.org/
-19 verbose request id dd8f531fcda7c540
-20 verbose url raw /winston
-21 verbose url resolving [ 'https://registry.npmjs.org/', './winston' ]
-22 verbose url resolved https://registry.npmjs.org/winston
-23 verbose request where is https://registry.npmjs.org/winston
-24 info trying registry request attempt 1 at 15:15:02
-25 verbose etag "X1ZDJFVN0VOKIYXKINZHYRUJ"
-26 http GET https://registry.npmjs.org/winston
-27 http 304 https://registry.npmjs.org/winston
-28 silly registry.get cb [ 304,
-28 silly registry.get   { date: 'Sun, 08 Mar 2015 20:15:03 GMT',
-28 silly registry.get     server: 'Apache',
-28 silly registry.get     via: '1.1 varnish',
-28 silly registry.get     'last-modified': 'Sun, 08 Mar 2015 20:15:03 GMT',
-28 silly registry.get     'cache-control': 'max-age=60',
-28 silly registry.get     etag: '"X1ZDJFVN0VOKIYXKINZHYRUJ"',
-28 silly registry.get     age: '0',
-28 silly registry.get     'x-served-by': 'cache-dfw1830-DFW',
-28 silly registry.get     'x-cache': 'HIT',
-28 silly registry.get     'x-cache-hits': '1',
-28 silly registry.get     'x-timer': 'S1425845703.025640,VS0,VE185',
-28 silly registry.get     vary: 'Accept',
-28 silly registry.get     'content-length': '0',
-28 silly registry.get     'keep-alive': 'timeout=10, max=50',
-28 silly registry.get     connection: 'Keep-Alive' } ]
-29 verbose etag https://registry.npmjs.org/winston from cache
-30 silly addNameRange number 2 { name: 'winston', range: '*', hasData: true }
-31 silly addNameRange versions [ 'winston',
-31 silly addNameRange   [ '0.2.11',
-31 silly addNameRange     '0.3.3',
-31 silly addNameRange     '0.3.4',
-31 silly addNameRange     '0.3.5',
-31 silly addNameRange     '0.4.0',
-31 silly addNameRange     '0.4.1',
-31 silly addNameRange     '0.5.0',
-31 silly addNameRange     '0.5.1',
-31 silly addNameRange     '0.5.2',
-31 silly addNameRange     '0.5.3',
-31 silly addNameRange     '0.5.4',
-31 silly addNameRange     '0.5.5',
-31 silly addNameRange     '0.5.6',
-31 silly addNameRange     '0.5.7',
-31 silly addNameRange     '0.5.8',
-31 silly addNameRange     '0.5.9',
-31 silly addNameRange     '0.5.10',
-31 silly addNameRange     '0.5.11',
-31 silly addNameRange     '0.6.1',
-31 silly addNameRange     '0.6.2',
-31 silly addNameRange     '0.7.0',
-31 silly addNameRange     '0.7.1',
-31 silly addNameRange     '0.7.2',
-31 silly addNameRange     '0.7.3',
-31 silly addNameRange     '0.8.0',
-31 silly addNameRange     '0.8.1',
-31 silly addNameRange     '0.8.2',
-31 silly addNameRange     '0.8.3',
-31 silly addNameRange     '0.9.0' ] ]
-32 verbose addNamed [ 'winston', '0.9.0' ]
-33 verbose addNamed [ '0.9.0', '0.9.0' ]
-34 silly lockFile 78f61e80-winston-0-9-0 winston@0.9.0
-35 verbose lock winston@0.9.0 /home/austin/.npm/78f61e80-winston-0-9-0.lock
-36 silly lockFile d700bb10-js-org-winston-winston-0-9-0-tgz https://registry.npmjs.org/winston/-/winston-0.9.0.tgz
-37 verbose lock https://registry.npmjs.org/winston/-/winston-0.9.0.tgz /home/austin/.npm/d700bb10-js-org-winston-winston-0-9-0-tgz.lock
-38 verbose addRemoteTarball [ 'https://registry.npmjs.org/winston/-/winston-0.9.0.tgz',
-38 verbose addRemoteTarball   'b5726e6c42291e305e36286ce7ae9f3b74a527a8' ]
-39 info retry fetch attempt 1 at 15:15:03
-40 verbose fetch to= /tmp/npm-27214-lRq6xWpH/registry.npmjs.org/winston/-/winston-0.9.0.tgz
-41 http GET https://registry.npmjs.org/winston/-/winston-0.9.0.tgz
-42 http 200 https://registry.npmjs.org/winston/-/winston-0.9.0.tgz
-43 silly lockFile d700bb10-js-org-winston-winston-0-9-0-tgz https://registry.npmjs.org/winston/-/winston-0.9.0.tgz
-44 silly lockFile d700bb10-js-org-winston-winston-0-9-0-tgz https://registry.npmjs.org/winston/-/winston-0.9.0.tgz
-45 silly lockFile 78f61e80-winston-0-9-0 winston@0.9.0
-46 silly lockFile 78f61e80-winston-0-9-0 winston@0.9.0
-47 silly lockFile 9aa54492-winston winston@
-48 silly lockFile 9aa54492-winston winston@
-49 error Error: EACCES, mkdir '/home/austin/.npm/winston/0.9.0'
-49 error  { [Error: EACCES, mkdir '/home/austin/.npm/winston/0.9.0']
-49 error   errno: 3,
-49 error   code: 'EACCES',
-49 error   path: '/home/austin/.npm/winston/0.9.0' }
-50 error Please try running this command again as root/Administrator.
-51 error System Linux 3.16.0-31-generic
-52 error command "/bin/node" "/bin/npm" "install" "winston" "--save"
-53 error cwd /home/austin/school/CS109/gameboy
-54 error node -v v0.10.33
-55 error npm -v 1.4.28
-56 error path /home/austin/.npm/winston/0.9.0
-57 error code EACCES
-58 error errno 3
-59 error stack Error: EACCES, mkdir '/home/austin/.npm/winston/0.9.0'
-60 verbose exit [ 3, true ]
+4 warn package.json gameboy@1.0.0 No repository field.
+5 warn package.json gameboy@1.0.0 No README data
+6 warn package.json gameboy@0.2.0 No repository field.
+7 verbose readDependencies using package.json deps
+8 verbose cache add [ 'connect-busyboy', null ]
+9 verbose cache add name=undefined spec="connect-busyboy" args=["connect-busyboy",null]
+10 verbose parsed url { protocol: null,
+10 verbose parsed url   slashes: null,
+10 verbose parsed url   auth: null,
+10 verbose parsed url   host: null,
+10 verbose parsed url   port: null,
+10 verbose parsed url   hostname: null,
+10 verbose parsed url   hash: null,
+10 verbose parsed url   search: null,
+10 verbose parsed url   query: null,
+10 verbose parsed url   pathname: 'connect-busyboy',
+10 verbose parsed url   path: 'connect-busyboy',
+10 verbose parsed url   href: 'connect-busyboy' }
+11 silly lockFile f9970138-connect-busyboy connect-busyboy
+12 verbose lock connect-busyboy /home/austin/.npm/f9970138-connect-busyboy.lock
+13 silly lockFile f9970138-connect-busyboy connect-busyboy
+14 silly lockFile f9970138-connect-busyboy connect-busyboy
+15 verbose addNamed [ 'connect-busyboy', '' ]
+16 verbose addNamed [ null, '*' ]
+17 silly lockFile 62018a76-connect-busyboy connect-busyboy@
+18 verbose lock connect-busyboy@ /home/austin/.npm/62018a76-connect-busyboy.lock
+19 silly addNameRange { name: 'connect-busyboy', range: '*', hasData: false }
+20 verbose request where is /connect-busyboy
+21 verbose request registry https://registry.npmjs.org/
+22 verbose request id aaa5f9e832f60496
+23 verbose url raw /connect-busyboy
+24 verbose url resolving [ 'https://registry.npmjs.org/', './connect-busyboy' ]
+25 verbose url resolved https://registry.npmjs.org/connect-busyboy
+26 verbose request where is https://registry.npmjs.org/connect-busyboy
+27 info trying registry request attempt 1 at 17:01:14
+28 http GET https://registry.npmjs.org/connect-busyboy
+29 http 404 https://registry.npmjs.org/connect-busyboy
+30 verbose headers { date: 'Sun, 08 Mar 2015 22:01:14 GMT',
+30 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+30 verbose headers   'content-type': 'application/json',
+30 verbose headers   'cache-control': 'max-age=0',
+30 verbose headers   'content-length': '52',
+30 verbose headers   'accept-ranges': 'bytes',
+30 verbose headers   via: '1.1 varnish',
+30 verbose headers   age: '0',
+30 verbose headers   'x-served-by': 'cache-dfw1832-DFW',
+30 verbose headers   'x-cache': 'MISS',
+30 verbose headers   'x-cache-hits': '0',
+30 verbose headers   'x-timer': 'S1425852074.720789,VS0,VE45',
+30 verbose headers   'keep-alive': 'timeout=10, max=50',
+30 verbose headers   connection: 'Keep-Alive' }
+31 silly registry.get cb [ 404,
+31 silly registry.get   { date: 'Sun, 08 Mar 2015 22:01:14 GMT',
+31 silly registry.get     server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+31 silly registry.get     'content-type': 'application/json',
+31 silly registry.get     'cache-control': 'max-age=0',
+31 silly registry.get     'content-length': '52',
+31 silly registry.get     'accept-ranges': 'bytes',
+31 silly registry.get     via: '1.1 varnish',
+31 silly registry.get     age: '0',
+31 silly registry.get     'x-served-by': 'cache-dfw1832-DFW',
+31 silly registry.get     'x-cache': 'MISS',
+31 silly registry.get     'x-cache-hits': '0',
+31 silly registry.get     'x-timer': 'S1425852074.720789,VS0,VE45',
+31 silly registry.get     'keep-alive': 'timeout=10, max=50',
+31 silly registry.get     connection: 'Keep-Alive' } ]
+32 silly lockFile 62018a76-connect-busyboy connect-busyboy@
+33 silly lockFile 62018a76-connect-busyboy connect-busyboy@
+34 error 404 404 Not Found: connect-busyboy
+34 error 404
+34 error 404 'connect-busyboy' is not in the npm registry.
+34 error 404 You should bug the author to publish it
+34 error 404 It was specified as a dependency of 'gameboy'
+34 error 404
+34 error 404 Note that you can also install from a
+34 error 404 tarball, folder, or http url, or git url.
+35 error System Linux 3.16.0-31-generic
+36 error command "/bin/node" "/bin/npm" "install" "connect-busyboy" "--save"
+37 error cwd /home/austin/school/CS109/gameboy
+38 error node -v v0.10.33
+39 error npm -v 1.4.28
+40 error code E404
+41 verbose exit [ 1, true ]

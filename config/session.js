@@ -5,6 +5,10 @@ var exports = module.exports = {
 
 	cookie: {
 		maxAge: 36000000
-	}
+	},
+
+	resave: false,
+
+	saveUninitialized: false
 
 };

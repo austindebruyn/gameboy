@@ -1,6 +1,6 @@
-- if (messages.info)
-	each message in messages.info
-		.alert.alert-default.alert-dismissable
+- if (messages.success)
+	each message in messages.success
+		.alert.alert-success.alert-dismissable
 			button.close(type='button', data-dismiss='alert')
 				span &times;
 			span.alert-message!= message

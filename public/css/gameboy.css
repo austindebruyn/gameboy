@@ -1,11 +1,7 @@
 
 @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400italic,400,300,700);
 
-.col-sliding {
-	transition: margin 400ms;
-}
-
-h1 {
+h1, h2, h3 {
 	padding-bottom: 15px;
 }
 
@@ -13,11 +9,10 @@ button {
 	padding: 8px 12px;
 }
 
-img#hi {
+img#lcd {
 	background-color: green;
 	display: block;
-	width: 166px;
-	height: 140px;
+	width: 100%;
 }
 
 input[type=text], input[type=password], input[type=textarea] {
@@ -90,6 +85,8 @@ input[type=text], input[type=password], input[type=textarea] {
 
 .chat {
 	background-color: #fff;
+	color: #111;
+	text-shadow: none;
 
 	position: relative;
 	height: 250px;
@@ -126,6 +123,7 @@ input[type=text], input[type=password], input[type=textarea] {
 }
 
 .switch {
+	float: left;
 	position: relative;
 	width: 32px;
 	height: 16px;
@@ -163,6 +161,18 @@ input[type=text], input[type=password], input[type=textarea] {
 
 .switch.on .button {
 	left: 16px;
+}
+
+.control-bar {
+	height: 28px;
+	margin: 6px 14px;
+}
+
+.control-bar select#speed {
+	float: right;
+	height: 20px;
+	width: 50%;
+	font-size: 16px;
 }
 
 canvas#mainCanvas {

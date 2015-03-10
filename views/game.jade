@@ -21,12 +21,18 @@ block head
 
 block content
 	h3= 'Welcome to room ' + room_id
-	img#hi
 	.col-lg-6.col-md-4.col-sm-6.col-md-push-6
 		.module
-			.switch
-				.button
-			canvas#mainCanvas
+			.control-bar
+				.switch
+					.button
+				select.form-control#speed
+					option(value='1') 0.25x
+					option(value='2') 0.5x
+					option(value='3') Normal
+					option(value='4') 2x
+					option(value='5') 4x
+			img#lcd
 	.col-lg-6.col-md-8.col-sm-6.col-md-pull-6
 		.module
 			include chat

@@ -1,4 +1,15 @@
 
+/**
+ * Parse base64 BLOB object using URL API to return an
+ * image source.
+ *
+ * This function is written by rauchg, reproduced here
+ * under an MIT license.
+ *  - https://github.com/rauchg/weplay-web /client/blob.js
+ * 
+ * @param  {BLOB} imageData Binary streamed PNG data.
+ * @return {String} 
+ */
 function blobToImage(imageData) {
 
 	if (Blob && 'undefined' != typeof URL) {
@@ -17,156 +28,89 @@ function blobToImage(imageData) {
  */
 document.onready =  function () {
 
-	// window.gbc = new GBC();
+	// Recompute canvas dimensions.
+	var LCD = $('img#lcd');
+	LCD.on('resize', function () {
+		LCD.css('height', 166 * (LCD.css('width') / 140));
+	});
 
 	var socket = io.connect();
-
-	window.SocketData = {};
+	// Before we can enter the chatroom and keypress socket channels,
+	// we need to figure out what our server-assigned user/room id is.
+	// First we'll fetch a JSON with some info so we can have some
+	// context to use in our new socket connection.
+	var SocketData = {};
 
 	$.ajax({
 		url: '/api/user'
 	}).done(function (data) {
-		console.log(data);
+
 		SocketData.user_id = data.user_id;
 		SocketData.username = data.username;
 		SocketData.room_id = data.room_id;
-		SocketData.host = data.host;
+
+		// Now that we have some info, let's beam it back so the server
+		// can associate our HTTP/Cookie session with our WebSocket session.
 		socket.emit('identify', data);
 
+		// Whenever we get a new frame event, convert the binary data into
+		// a base64 URL parameter we can assign to our canvas-spoofing img
+		// element.
+		var previous;
 		socket.on('frame', function (buf) {
-			console.log('got buffer!');
-			$('#hi')[0].src = blobToImage(buf);
+			if (typeof previous !== 'undefined') URL.revokeObjectURL(previous);
+			LCD[0].src = previous = blobToImage(buf);
 		});
-
-		if (SocketData.host) {
-
-			socket.on('keydown', function (key) {
-				console.log('RCV KEYDOWN ' + key);
-				GameBoyKeyDown(key);
-			});
-
-			socket.on('keyup', function (key) {
-				console.log('RCV KEYUP ' + key);
-				GameBoyKeyUp(key);
-			});
-
-			// setInterval(function () {
-			// 	// Stream frame upwards.
-			// 	var frameBuffer = gbc.getFB(); 
-			// 	if (frameBuffer === null) return;
-			// 	socket.emit('frame', frameBuffer);
-			// 	// console.log('frame up len: ' + frameBuffer.length);
-			// }, 5000);
-
-		} else {
-
-			socket.on('turnon', function () {
-				gbc.turnOn();
-			});
-
-			socket.on('turnoff', function () {
-				gbc.turnOff();
-			});
-
-			// socket.on('frame', function (frame) {
-			// 	console.log('rcv frame len: ' + frame + '.');
-			// 	gameboyCore.frameBuffer = frame;
-			// 	gameboyCore.dispatchDraw();
-			// });
-		}
 	});
 
 	socket.on('error', function (message) {
-		console.log('ERR ' + message);
+		console.log('Socket.io error: ' + message);
 	});
 
 	socket.on('message', function (data) {
 		chatbox.addLine(data.username, data.message);
 	});
 
-	window.onresize = initNewCanvasSize;
-	window.cout = function (message, color) { console.log(message); };
+	socket.on('power', function () {
+		$('.switch').toggleClass('on');
+	});
 
-	var keyZones = [
-		["right", [39]],
-		["left", [37]],
-		["up", [38]],
-		["down", [40]],
-		["a", [88, 74]],
-		["b", [90, 81, 89]],
-		["select", [16]],
-		["start", [13]]
-	];
+	socket.on('speed', function (speed) {
+		$('select#speed').val(speed);
+	});
+	
+	var keys = {
+		39: 0,
+		37: 1,
+		38: 2,
+		40: 3,
+		88: 4,
+		89: 5,
+		16: 6,
+		13: 7
+	};
 
-	function keyDown(event) {
+	var keyHandle = function (event) {
 		if (chatbox.hasFocus()) return;
-		var keyCode = event.keyCode;
-		var keyMapLength = keyZones.length;
-		for (var keyMapIndex = 0; keyMapIndex < keyMapLength; ++keyMapIndex) {
-			var keyCheck = keyZones[keyMapIndex];
-			var keysMapped = keyCheck[1];
-			var keysTotal = keysMapped.length;
-			for (var index = 0; index < keysTotal; ++index) {
-				if (keysMapped[index] == keyCode) {
-
-					console.log('KEYDOWN ' + keyCheck[0]);
-
-						socket.emit('keydown', keyCheck[0])
-
-					try {
-						event.preventDefault();
-					}
-					catch (error) { }
-				}
-			}
+		var gbKey = keys[event.keyCode];
+		if (typeof gbKey !== 'undefined') {
+			socket.emit(event.type, gbKey);
+			event.preventDefault();
 		}
-	}
+	};
 
-	function keyUp(event) {
-		if (chatbox.hasFocus()) return;
-		var keyCode = event.keyCode;
-		var keyMapLength = keyZones.length;
-		for (var keyMapIndex = 0; keyMapIndex < keyMapLength; ++keyMapIndex) {
-			var keyCheck = keyZones[keyMapIndex];
-			var keysMapped = keyCheck[1];
-			var keysTotal = keysMapped.length;
-			for (var index = 0; index < keysTotal; ++index) {
-				if (keysMapped[index] == keyCode) {
+	$(document).on("keydown", keyHandle);
+	$(document).on("keyup", keyHandle);
 
-					console.log('KEYUP ' + keyCheck[0]);
+	$('.switch').click(function () {
+		socket.emit('power');
+		$('.switch').toggleClass('on');
+	});
 
-						socket.emit('keyup', keyCheck[0]);
-
-					try {
-						event.preventDefault();
-					}
-					catch (error) { }
-				}
-			}
-		}
-	}
-
-	document.addEventListener("keydown", keyDown);
-	document.addEventListener("keyup", keyUp);
-
-	// var PokemonRedROM = base64_decode(decodePokemonRedROM());
-
-	// gbc.load({ name: 'Pokemon Red', ROM: PokemonRedROM });
-
-	// $('.switch').click( function () {
-	// 	if (gbc.power) {
-	// 		$('.switch').removeClass('on');
-	// 		gbc.turnOff();
-	// 		socket.emit('turnoff');
-	// 	} else {
-	// 		if (gbc.loaded()) {
-	// 			$('.switch').addClass('on');
-	// 			gbc.turnOn();
-
-	// 			socket.emit('turnon');
-	// 		}
-	// 	}
-	// });
+	$('select#speed').change(function () {
+		var speed = $('select#speed').val();
+		socket.emit('speed', speed);
+	});
 
 	$('input[name=chat-input-line]').keypress(function (evt) {
 		if (evt.which === 13) {
@@ -181,16 +125,4 @@ document.onready =  function () {
 			}
 		}
 	});
-};
-
-/**
- * Darkens the canvas that represents the LCD.
- * @return {[type]} [description]
- */
-var blackOutCanvas = function () {
-	var canvas = document.getElementById("mainCanvas");
-	var context = canvas.getContext('2d');
-	context.rect(0, 0, canvas.width, canvas.height);
-	context.fillStyle = 'black';
-	context.fill();
 };
