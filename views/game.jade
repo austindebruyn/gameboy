@@ -20,7 +20,9 @@ block head
 	script(src='js/chat.js')
 
 block content
-	h3= 'Welcome to room ' + room_id
+	h2
+		span.glyphicon.glyphicon-phone
+		= ' ' + room_id
 	.col-lg-6.col-md-4.col-sm-6.col-md-push-6
 		.module
 			.control-bar

@@ -27,7 +27,7 @@ var exports = module.exports = {
 			socket.on('disconnect', function () {
 				log.info('Socket disconnection.');
 
-				if (typeof room !== 'undefined')
+				if (room)
 					if (--room.clientCount < 1) rooms.close(room);
 			});
 
