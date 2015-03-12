@@ -6,6 +6,7 @@ var http 		= require('http');
 var validate 	= require('validate.js');
 var bodyParser 	= require('body-parser');
 var uuid 		= require('node-uuid');
+var multer  	= require('multer');
 
 // Express bootstrapping!
 var app 		= express();
@@ -14,7 +15,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(require('express-session')(require('./config/session')));
-app.use(require('connect-busboy')({ immediate: true }));
+app.use(require('connect-busboy')({}));
+
 app.set('view engine', 'jade');
 
 // Set up the view configuration.
@@ -60,54 +62,75 @@ app.get('/api/user', function (req, res) {
 	}));
 });
 
+app.get('/api/games/destroy', function (req, res) {
+	//var id = req.body.game_id;
+	var id = req.query.id;
+	log.info('Handling request to destroy game %d.', id);
+
+	games.destroy(id, function (number) {
+		if (number < 1) {
+			log.err('Only %d games were deleted... query messed up?', number);
+			res.send({ success: false });
+			return res.end();
+		}
+		res.send({ success: true });
+		return res.end();
+	});
+});
+
 app.post('/api/games/create', function (req, res) {
 	if (typeof req.session.username === 'undefined') {
 		req.statusCode = 403;
 		return res.end();
 	}
 
-	var fstream;
-    req.pipe(req.busboy);
     req.busboy.on('file', function (fieldname, file, filename) {
 
-    	if (fieldname !== 'rom') return res.render('404');
+		if (fieldname !== 'rom') return res.render('404');
 
-    	log.note('Handling file upload for %s=%s.', fieldname, filename);
+		log.note('Handling file upload for %s=%s.', fieldname, filename);
 
-    	var rules = {
+		var rules = {
 			fileSize: {
 				minimum: 1,
-				maximum: 1024 * 1024 * 8
+				maximum: 1024 * 1024 * 16
 			}
-    	};
+		};
 
-    	var input = {};
-    	var errors = validate(rules, { fileSize: file.size });
+		var input = {};
+		var errors = validate(rules, { fileSize: file.size });
 
-    	if (errors) {
+		if (errors) {
 			for (var i in errors) { req.flash('err', errors[i]); };
 				return res.redirect('/')
-    	}
+		}
 
-    	games.create({
-    		filename: filename,
-    		file: file,
-    		username: req.session.username
-    	}, function (err) {
-    		if (err) {
-    			log.err(err);
-    			req.flash('err', 'Something went wrong while trying to store that!');
-    			return res.redirect('/');
-    		}
+		games.create({
+			filename: filename,
+			file: file,
+			username: req.session.username
+		}, function (err) {
+			if (err) {
+				log.err(err);
+				req.flash('err', 'Something went wrong while trying to store that!');
+				return res.redirect('/');
+			}
 
-    		req.flash('success', 'Got it! That game is now playable.');
-    		return res.redirect('/');
-    	});
-
+			req.flash('success', 'Got it! That game is now playable.');
+			return res.redirect('/');
+		});
     });
+
+    req.pipe(req.busboy);
 });
 
 app.get('/~:name', function (req, res) {
+	
+	if (typeof req.session.username === 'undefined') {
+		req.statusCode = 403;
+		return res.end();
+	}
+
 	var room_id = req.params.name;
 
 	var rules = {
@@ -119,6 +142,8 @@ app.get('/~:name', function (req, res) {
 			}
 		}
 	};
+
+	log.info('User %s attempting to join room %s.', req.session.username, room_id);
 
 	var errors = validate({ name: room_id }, rules);
 
@@ -144,11 +169,23 @@ app.get('/~:name', function (req, res) {
 app.post('/host', function (req, res) {
 	if (typeof req.session.username === 'undefined') return res.redirect('/who-are-you');
 
-	var newRoom = rooms.open(req.session.user_id, 'group');
+	var romId = req.body.rom;
 
-	log.note('User %s hosting new room %s.', req.session.id, newRoom.room_id);
+	log.info('User %s requesting to host game by id %d.', req.session.body, romId);
 
-	return res.redirect('/~' + newRoom.room_id);
+	games.find(romId, function (game) {
+		if (!game) {
+			log.err('User %s attempted to host a nonexistant game by id %d.', req.session.username, romId);
+			req.flash('err', "That game doesn't exist!");
+			return res.redirect('/');
+		}
+
+		var newRoom = rooms.open(req.session.user_id, game, 'group');
+
+		log.note('User %s hosting new room %s with ROM %s.', req.session.id, newRoom.room_id, game.title);
+
+		return res.redirect('/~' + newRoom.room_id);
+	});
 });
 
 app.post('/join', function (req, res) {

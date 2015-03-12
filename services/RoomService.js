@@ -5,6 +5,22 @@ var Canvas = require('canvas');
 var Gameboy = require('gameboy');
 
 /**
+ * Spoof this function because it is error-prone.
+ * @param  {[type]} parentObj [description]
+ * @param  {[type]} address   [description]
+ * @param  {[type]} data      [description]
+ * @return {[type]}           [description]
+ */
+Gameboy.prototype.memoryWriteMBCRAM = function (parentObj, address, data) {
+	try {
+		if (parentObj.MBCRAMBanksEnabled || this.opts.overrideMbc) {
+			parentObj.MBCRam[address + parentObj.currMBCRAMBankPosition] = data;
+		}
+	}
+	catch (ex) {}
+}
+
+/**
  * This service guards the room resources, handling the CRUD operations
  * needed and making sure we can close rooms appropriately.
  * @type {[type]}
@@ -46,17 +62,22 @@ var exports = module.exports = {
 		};
 
 		// Room prototype object.
-		var Room = function (owner, type) {
+		var Room = function (owner, game, type) {
 			this.owner = owner;
 			this.room_id = genRoomName();
 			this.type = (type === undefined) ? 'group' : 'solo';
 			this.clientCount = 0;
+			this.lastTimestamp = Date.now();
 
-			var ROM = new Buffer(require('../public/games/pokemon.js')(), 'base64');
+			var fullRomPath = './data/uploads/' + game.filename;
+
+			log.info('Reading file %s from disk.', fullRomPath);
+			var ROM = new Buffer(fs.readFileSync(fullRomPath));
 
 			// Create a new instance of an emulation.
 			var mainCanvas = new Canvas(160, 144);
-			var gb = Gameboy(mainCanvas, ROM, {});
+			var gb = new Gameboy(mainCanvas, ROM, {});
+
 			gb.start();
 			gb.stopEmulator = 1;
 			log.info('Created new canvas and gameboy emulator.');
@@ -69,7 +90,7 @@ var exports = module.exports = {
 				start: function (speed) {
 					if (this.running) return;
 					if (typeof speed === 'number') this.speed = speed;
-					var ticks = [16, 8, 4, 2, 1][this.speed - 1];
+					var ticks = [64, 16, 8, 4, 2][this.speed - 1];
 					this.gbLoop = setInterval(gb.run.bind(gb), ticks);
 					this.running = true;
 				},
@@ -87,19 +108,40 @@ var exports = module.exports = {
 			}
 		};
 
+		/**
+		 * Touches the timestamp to keep the room fresh.
+		 * @return {[type]} [description]
+		 */
+		Room.prototype.touch = function () {
+			this.lastTimestamp = new Date();
+		}
+
 		return {
-			open: function (owner_id, type) {
-				var room = new Room(owner_id, type);
+			/**
+			 * Opens a new room with the specified owner, ROM, and type.
+			 * @param  {String} owner_id session id of the authoring user
+			 * @param  {Object} game 	 a game object to load 
+			 * @param  {String} type 	 whether the room is group or solo.
+			 * @return {Object}          the newly opened room
+			 */
+			open: function (owner_id, game, type) {
+				var room = new Room(owner_id, game, type);
 				log.note('Opening new room, id %s.', room.room_id);
 				RoomArray[room.room_id] = room;
 				return room;
 			},
+			/**
+			 * Closes the specified room by id. 
+			 * @param  {mixed} room_or_id a Room object or an id
+			 * @return {undefined}            
+			 */
 			close: function (room_or_id) {
 				if (typeof room_or_id !== 'object')
 					room_or_id = this.find(room_or_id);
 				if (!(room_or_id instanceof Room)) throw new Error('Cannot close nonexistant room.');
 
 				var room = room_or_id;
+				delete RoomArray[room.room_id];
 				room.emulation.stop();
 				room.emulation.destroy();
 
@@ -107,9 +149,14 @@ var exports = module.exports = {
 
 				log.note('Closed room %s. Gameboy stopped and canvas marked for GC.', room.room_id);
 			},
+			/**
+			 * Returns a specific room object by id.
+			 * @param  {id}  		room_id 
+			 * @return {Object}     null if the room doesn't exist
+			 */
 			find: function (room_id) {
 				var room = RoomArray[room_id];
-				return (room === undefined) ? null : room;
+				return (typeof room === 'undefined') ? null : room;
 			}
 		};
 	}

@@ -28,6 +28,8 @@ var exports = module.exports = {
 
 				var file = data.file;
 
+				log.info('file size: %d %d %d', file.size, data.filesize, data.size);
+
 				var shaSum = crypto.createHash('sha1');
 				shaSum.update(data.username + '-' + data.filename + '-' + (new Date()).toString());
 				var storedName = shaSum.digest('hex');
@@ -63,6 +65,40 @@ var exports = module.exports = {
 			all: function (callback) {
 				db.Game.findAll().then(function (games) {
 					callback(games);
+				});
+			},
+
+			/**
+			 * Searches for an individual game identified by the parameters.
+			 * @param  {Object}   params   
+			 * @param  {Function} callback 
+			 * @return {undefined}            
+			 */
+			find: function (id, callback) {
+				db.Game.find({ where: { id: id } }).then(callback);
+			},
+
+			/**
+			 * Destroys the given game.
+			 * @param  {[type]}   params   [description]
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
+			destroy: function (id, callback) {
+				db.Game.find({ where: { id: id }}).then(function (game) {
+					if (!game) return callback(0);
+
+					var storedName = game.filename;
+					var fullPath = path.normalize(__dirname + '/../data/uploads/') + storedName;
+					log.info('About to unlink file %s.', fullPath);
+					fs.unlink(fullPath, function (err) {
+						if (err) {
+							log.err(err);
+							return callback(0);
+						}
+
+						db.Game.destroy({ where: { id: id } }).then(callback);
+					});
 				});
 			}
 		};

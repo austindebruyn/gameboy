@@ -30,9 +30,11 @@ document.onready =  function () {
 
 	// Recompute canvas dimensions.
 	var LCD = $('img#lcd');
-	LCD.on('resize', function () {
-		LCD.css('height', 166 * (LCD.css('width') / 140));
-	});
+	var LCDResize = function () {
+		LCD.css('height', '' + (140 * (LCD[0].width / 166)) + 'px');
+	};
+	LCD.on('resize', LCDResize);
+	LCDResize();
 
 	var socket = io.connect();
 	// Before we can enter the chatroom and keypress socket channels,
@@ -80,27 +82,27 @@ document.onready =  function () {
 	});
 	
 	var keys = {
-		39: 0,
-		37: 1,
-		38: 2,
-		40: 3,
-		88: 4,
-		89: 5,
-		16: 6,
-		13: 7
+		39: 0, // left
+		37: 1, // right
+		38: 2, // up
+		40: 3, // down
+		88: 4, // A
+		90: 5, // B
+		16: 6, // start
+		13: 7  // select
 	};
 
-	var keyHandle = function (event) {
+	var keyHandle = function (event, down) {
 		if (chatbox.hasFocus()) return;
 		var gbKey = keys[event.keyCode];
 		if (typeof gbKey !== 'undefined') {
-			socket.emit(event.type, gbKey);
+			socket.emit(down ? 'keydown' : 'keyup', gbKey);
 			event.preventDefault();
 		}
 	};
 
-	$(document).on("keydown", keyHandle);
-	$(document).on("keyup", keyHandle);
+	$(document).on("keydown", function (event) { keyHandle(event, true); });
+	$(document).on("keyup", function (event) { keyHandle(event, false); });
 
 	$('.switch').click(function () {
 		socket.emit('power');

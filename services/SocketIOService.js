@@ -50,10 +50,11 @@ var exports = module.exports = {
 				socket.emit('speed', room.emulation.speed);
 
 				var framePush = setInterval(function() {
-					room.emulation.canvas.toBuffer(function (err, buf) {
-						if (err) throw err;
-						socket.emit('frame', buf);
-					});
+					if (room.emulation.running && room.emulation.canvas)
+						room.emulation.canvas.toBuffer(function (err, buf) {
+							if (err) throw err;
+							socket.emit('frame', buf);
+						});
 				}, 20);
 
 				room.onclose = function () { clearInterval(framePush); };
@@ -62,14 +63,23 @@ var exports = module.exports = {
 				// clients in this game room.
 				socket.join(room.room_id);
 
+				// Use this to guard against keydown spamming.
+				var DownKeys = {};
+				for (var i = 0; i < 8; i++) DownKeys[i] = false;
+
 				// On keyup events, verify that the user has permission and invoke the GB.
 				socket.on('keyup', function (data) {
-					room.emulation.gb.JoyPadEvent(data, true);
+					DownKeys[i] = false;
+					console.log('keyup ' + data);
+					room.emulation.gb.JoyPadEvent(data, false);
 				});
 
 				// On keydown events, verify that the user has permission and invoke the GB.
 				socket.on('keydown', function (data) {
-					room.emulation.gb.JoyPadEvent(data, false);
+					if (DownKeys[i]) return;
+					DownKeys[i] = true;
+					console.log('keydown ' + data);
+					room.emulation.gb.JoyPadEvent(data, true);
 				});
 
 				// On keydown events, verify that the user has permission and invoke the GB.

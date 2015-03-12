@@ -3,22 +3,31 @@ extends layout
 block content
 	h2 What would you like to do?
 	.col-sm-3.col-md-6.col-lg-6
-		.module
-			h3 Host
-			form(action='/host', method='post')
-				label(for='rom') Select Game
-				select.form-control(name='rom')
-					each game, index in games
-						option(val=index)= game.title
-				button.btn.btn-lg.btn-primary(type='submit') Host
-		.module
-			h3 Join
-			form(action='/join', method='post')
-				input.form-control(type='text', name='room_id')
-				button.btn.btn-lg.btn-primary(type='submit') Join
+		if(games.length)
+			.module
+				h3 Host
+				form(action='/host', method='post')
+					label(for='rom') Select Game
+					select.form-control(name='rom')
+						each game in games
+							option(value=game.id)= game.title
+					button.btn.btn-lg.btn-primary.btn-pos(type='submit') Host
+					.clearfix
+			.module
+				h3 Join
+				form(action='/join', method='post')
+					input.form-control(type='text', name='room_id')
+					button.btn.btn-lg.btn-primary.btn-pos(type='submit') Join
+					.clearfix
+		else
+			.module
+				h3 Hosting Not Allowed
+				.alert.alert-warning There are no games in the database!
+		endif
 	.col-sm-3.col-md-6.col-lg-6
 		.module
 			h3 Add a New Game
 			form(enctype='multipart/form-data', action='/api/games/create', method='POST')
 				input(type='file', name='rom')
-				button.btn.btn-lg.btn-primary(type='submit') Upload
+				button.btn.btn-lg.btn-primary.btn-pos(type='submit') Upload
+				.clearfix
