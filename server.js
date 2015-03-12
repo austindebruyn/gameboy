@@ -31,6 +31,20 @@ var idle 		= require('./services/IdleService').boot(rooms);
 var socketio	= require('./services/SocketIOService');
 
 // Open up routes.
+app.use(function (req, res, next) {
+
+	log.warn(req.headers.host);
+
+	var hostname = req.headers.host.split(":")[0];
+	var parts = hostname.split('.');
+	if (parts.length == 3) {
+		if (parts[1] === 'gbcloud' && parts[2] === 'xyz') {
+			return JoinRoom(req, res);
+		}
+
+	next();
+});
+
 app.get('/', function (req, res) {
 	if (typeof req.session.username === 'undefined') return res.redirect('/who-are-you');
 	res.locals.username = req.body.username;
@@ -243,16 +257,6 @@ app.post('/who-are-you', function (req, res) {
  * @return {[type]}      
  */
 app.use(function (req, res, next) {
-
-	log.info('Routing fell through... %s.', req.headers.host.split(":")[0]);
-
-	var hostname = req.headers.host.split(":")[0];
-	var parts = hostname.split('.');
-	if (parts.length == 3) {
-		if (parts[1] === 'gbcloud' && parts[2] === 'xyz') {
-			return JoinRoom(req, res);
-		}
-	}
 
 	res.status(404);
 
