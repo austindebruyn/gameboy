@@ -17,8 +17,7 @@ var exports = module.exports = {
 		io.sockets.on('connection', function (socket) {
 
 			var room;
-			var addr = socket.request.connection._peername.address;
-			log.debug('Socket.io connection from %s:%s.', addr.address, addr.port);
+			log.debug('New socket.io connection, waiting for identification...');
 
 			// Log all errors, but do not kick the client.
 			socket.on('error', function (err) {
@@ -26,7 +25,7 @@ var exports = module.exports = {
 			});
 
 			socket.on('disconnect', function () {
-				log.info('Socket disconnection from %s:%s.', addr.address, addr.port);
+				log.info('Socket disconnection.');
 
 				if (typeof room !== 'undefined')
 					if (--room.clientCount < 1) rooms.close(room);
@@ -72,6 +71,7 @@ var exports = module.exports = {
 					DownKeys[i] = false;
 					console.log('keyup ' + data);
 					room.emulation.gb.JoyPadEvent(data, false);
+					room.touch();
 				});
 
 				// On keydown events, verify that the user has permission and invoke the GB.
@@ -80,6 +80,7 @@ var exports = module.exports = {
 					DownKeys[i] = true;
 					console.log('keydown ' + data);
 					room.emulation.gb.JoyPadEvent(data, true);
+					room.touch();
 				});
 
 				// On keydown events, verify that the user has permission and invoke the GB.
@@ -93,6 +94,7 @@ var exports = module.exports = {
 							room.emulation.start();
 						}
 						socket.broadcast.to(room.room_id).emit('speed', speed);
+						room.touch();
 					} else {
 						log.debug('[%s][room:%s]: Tried to set speed to %s.', data.username, room.room_id, speed);
 					}
@@ -106,7 +108,7 @@ var exports = module.exports = {
 						room.emulation.start();
 					log.debug('[%s][room:%s]: Turned the GB %s.', data.username, room.room_id, room.emulation.running ? 'on' : 'off');
 					socket.broadcast.to(room.room_id).emit('power');
-					
+					room.touch();
 				});
 
 				// On message events, verify that the user has permission and broadcast the message.
@@ -118,6 +120,7 @@ var exports = module.exports = {
 						color: color,
 						message: messageData.message
 					});
+					room.touch();
 				});
 
 			});

@@ -27,6 +27,7 @@ global.log 		= require('./services/LogService').boot();
 var db 			= require('./services/DbService').boot();
 var rooms 		= require('./services/RoomService').boot();
 var games		= require('./services/GameService').boot(db);
+var idle 		= require('./services/IdleService').boot(rooms);
 var socketio	= require('./services/SocketIOService');
 
 // Open up routes.
@@ -123,7 +124,7 @@ app.post('/api/games/create', function (req, res) {
     req.pipe(req.busboy);
 });
 
-app.get('/~:name', function (req, res) {
+var JoinRoom = function (req, res) {
 
 	if (typeof req.session.username === 'undefined') {
 		req.statusCode = 403;
@@ -153,8 +154,7 @@ app.get('/~:name', function (req, res) {
 
 	var room = rooms.find(room_id);
 	if (room === null) {
-		req.flash('err', "That room doesn't exist!");
-		return res.redirect('/');
+		return res.render(404);
 	}
 
 	req.session.room_id = room_id;
@@ -163,7 +163,9 @@ app.get('/~:name', function (req, res) {
 
 	log.debug('Serving join game for session user %s.', req.session.username);
 	return res.render('game');
-});
+};
+
+app.get('/~:name', JoinRoom);
 
 app.post('/host', function (req, res) {
 	if (typeof req.session.username === 'undefined') return res.redirect('/who-are-you');
@@ -233,7 +235,25 @@ app.post('/who-are-you', function (req, res) {
 	return res.redirect('/');
 });
 
+/**
+ * Direct 404 errors to a 404 page
+ * @param  {[type]} req  
+ * @param  {[type]} res  
+ * @param  {[type]} next
+ * @return {[type]}      
+ */
 app.use(function (req, res, next) {
+
+	log.info('Routing fell through... %s.', req.headers.host.split(":")[0]);
+
+	var hostname = req.headers.host.split(":")[0];
+	var parts = hostname.split('.');
+	if (parts.length == 3) {
+		if (parts[1] === 'gbcloud' && parts[2] === 'xyz') {
+			return JoinRoom(req, res);
+		}
+	}
+
 	res.status(404);
 
 	if (req.accepts('html'))
@@ -244,6 +264,7 @@ app.use(function (req, res, next) {
 	res.type('txt').send('Not found');
 });
 
+// Start listening!
 var server 	= app.listen(PORT);
 var socketio = socketio.boot(server, rooms);
 log.note('Server listening on port %d.', PORT);

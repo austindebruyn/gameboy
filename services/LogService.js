@@ -32,7 +32,7 @@ var exports = module.exports = {
 				chat: 'cyan',
 				info: 'white',
 				note: 'green',
-				warn: 'orange',
+				warn: 'yellow',
 				err: 'red'
 			}
 		};

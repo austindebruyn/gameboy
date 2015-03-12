@@ -157,6 +157,15 @@ var exports = module.exports = {
 			find: function (room_id) {
 				var room = RoomArray[room_id];
 				return (typeof room === 'undefined') ? null : room;
+			},
+
+			/**
+			 * Executes a callback for each room in the array.
+			 * @param  {Function} callback 
+			 * @return {undefined} 
+			 */
+			forEach: function (callback) {
+				for (var room_id in RoomArray) callback(RoomArray[room_id]);
 			}
 		};
 	}
