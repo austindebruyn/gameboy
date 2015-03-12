@@ -69,7 +69,6 @@ var exports = module.exports = {
 				// On keyup events, verify that the user has permission and invoke the GB.
 				socket.on('keyup', function (data) {
 					DownKeys[i] = false;
-					console.log('keyup ' + data);
 					room.emulation.gb.JoyPadEvent(data, false);
 					room.touch();
 				});
@@ -78,7 +77,6 @@ var exports = module.exports = {
 				socket.on('keydown', function (data) {
 					if (DownKeys[i]) return;
 					DownKeys[i] = true;
-					console.log('keydown ' + data);
 					room.emulation.gb.JoyPadEvent(data, true);
 					room.touch();
 				});

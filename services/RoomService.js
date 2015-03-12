@@ -101,7 +101,8 @@ var exports = module.exports = {
 				},
 				destroy: function () {
 					this.stop();
-					this.gb.JoyPadEvent = function() {}; // Clear event handlers.
+					if (this.gb)
+						this.gb.JoyPadEvent = function() {}; // Clear event handlers.
 					this.gb = null;
 					this.canvas = null;
 				}
