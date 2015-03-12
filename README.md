@@ -1,3 +1,3 @@
 ##Hosted at
 
-* http://au.stin.xyz:3000/
+* http://gbcloud.xyz

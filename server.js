@@ -6,7 +6,6 @@ var http 		= require('http');
 var validate 	= require('validate.js');
 var bodyParser 	= require('body-parser');
 var uuid 		= require('node-uuid');
-var multer  	= require('multer');
 
 // Express bootstrapping!
 var app 		= express();
@@ -125,7 +124,7 @@ app.post('/api/games/create', function (req, res) {
 });
 
 app.get('/~:name', function (req, res) {
-	
+
 	if (typeof req.session.username === 'undefined') {
 		req.statusCode = 403;
 		return res.end();
@@ -226,7 +225,6 @@ app.post('/who-are-you', function (req, res) {
 			return res.redirect('/who-are-you')
 	}
 
-	req.flash('success', 'You in!');
 	req.session.user_id = uuid.v4();
 	req.session.username = req.body.username;
 	res.locals.username = req.body.username;
